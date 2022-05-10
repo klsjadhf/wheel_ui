@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import time
 import threading
+import math
 
 is_fullscreen = False
 
@@ -32,6 +33,49 @@ startBtn.grid(column=0, row=0, sticky="ne")
 dashboard = ttk.Frame(root, style="MyStyle.TFrame")
 dashboard.grid(column=0, row=1, sticky="nsew")
 
+# def rotate_line(parent_canvas, line, angle):
+    # angle = -math.radians(angle)
+    # end_x = mid_pt_x + (radius * math.cos(angle))
+    # end_y = mid_pt_y + (radius * math.sin(angle))
+    # start_x = end_x - (len * math.cos(angle))
+    # start_y = end_y - (len * math.sin(angle))
+
+    # print(start_x, start_y, end_x, end_y)
+    # print(parent_canvas.coords(line))
+
+    # parent_canvas.coords(line, start_x, start_y, end_x, end_y)
+# class RotatableLine:
+
+#     def __init__(self, parent, mid_pt_x, mid_pt_y, radius, len, angle):
+#         self.parent = parent
+#         self.mid_pt_x = mid_pt_x
+#         self.mid_pt_y = mid_pt_y
+#         self.radius = radius
+#         self.len = len
+#         self.angle = -math.radians(angle)
+
+#     def calculate_line(self):
+#         self.end_x = self.mid_pt_x + (self.radius * math.cos(self.angle))
+#         self.end_y = self.mid_pt_y + (self.radius * math.sin(self.angle))
+#         self.start_x = self.end_x - (self.len * math.cos(self.angle))
+#         self.start_y = self.end_y - (self.len * math.sin(self.angle))
+
+#         print(self.start_x, self.start_y, self.end_x, self.end_y)
+
+#         self.line = self.parent.create_line(self.start_x, self.start_y, self.end_x, self.end_y)
+        
+# parent canvas, mid points of circle, radius of circle, length from circumfrence to center, angle in degs
+def create_arc_seg(parent, mid_pt_x, mid_pt_y, radius, len, angle):
+    angle = -math.radians(angle)
+    end_x = mid_pt_x + (radius * math.cos(angle))
+    end_y = mid_pt_y + (radius * math.sin(angle))
+    start_x = end_x - (len * math.cos(angle))
+    start_y = end_y - (len * math.sin(angle))
+
+    print(start_x, start_y, end_x, end_y)
+
+    return parent.create_line(start_x, start_y, end_x, end_y)
+
 # create 3x3 grid
 for row in range (3):
     dashboard.rowconfigure(row, weight=1)
@@ -53,7 +97,7 @@ print("hi")
 print(frame_N1.winfo_width())
 frame_N1.grid(column=0, row=0, sticky="nsew")
 
-canvas_N1 = tk.Canvas(frame_N1, bg="green", highlightthickness=0)
+canvas_N1 = tk.Canvas(frame_N1, bg="black", highlightthickness=0)
 canvas_N1.pack(fill="both", expand=True)
 
 arc_N1 = canvas_N1.create_arc(10, 0, 150, 140, outline=arc_fill_colour, fill=arc_fill_colour, width=arc_line_width, start=0, extent=-0)
@@ -88,6 +132,9 @@ frame_SPD.grid(column=1, row=0, sticky="nsew", rowspan=2, columnspan=2)
 canvas_SPD = tk.Canvas(frame_SPD, bg="orange", highlightthickness=0)
 canvas_SPD.pack(fill="both", expand=True)
 
+canvas_SPD.create_arc(10, 10, 520, 520, outline=arc_line_colour, width=arc_line_width, start=0, extent=180, style="arc")
+canvas_SPD.create_line(250, 260, 300, 260)
+seg_1 = create_arc_seg(canvas_SPD, 265, 265, 255, 200, 15)
 
 # ST_FC
 frame_ST_FC = ttk.Frame(dashboard, style="MyStyle.TFrame")
@@ -106,12 +153,20 @@ canvas_FUEL.pack(fill="both", expand=True)
 
 
 def inc_pie():
-    for i in range(190):
-        canvas_N1.itemconfigure(arc_N1, extent=-i)
-        time.sleep(0.01)
-        label_N1["text"] = i/10
-        # print("hi")
-    input("end")
+    while (1):
+        for i in range(190):
+            canvas_N1.itemconfigure(arc_N1, extent=-i)
+            time.sleep(0.01)
+            label_N1["text"] = i/10
+            # print("hi")
+        print("loop")
+        rotate_line (canvas_SPD, seg_1,0)
+        # for i in range(180):
+        #     canvas_SPD.itemconfigure(seg_1, extent=-i)
+        #     time.sleep(0.01)
+        #     label_N1["text"] = i/10
+        #     # print("hi")
+        # print("loop")
 
 thread1 = threading.Thread(target=inc_pie, daemon=True)
 thread1.start()
