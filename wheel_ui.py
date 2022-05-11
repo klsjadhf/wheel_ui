@@ -34,47 +34,61 @@ dashboard = ttk.Frame(root, style="MyStyle.TFrame")
 dashboard.grid(column=0, row=1, sticky="nsew")
 
 # def rotate_line(parent_canvas, line, angle):
-    # angle = -math.radians(angle)
-    # end_x = mid_pt_x + (radius * math.cos(angle))
-    # end_y = mid_pt_y + (radius * math.sin(angle))
-    # start_x = end_x - (len * math.cos(angle))
-    # start_y = end_y - (len * math.sin(angle))
+#     angle = -math.radians(angle)
+#     end_x = mid_pt_x + (radius * math.cos(angle))
+#     end_y = mid_pt_y + (radius * math.sin(angle))
+#     start_x = end_x - (len * math.cos(angle))
+#     start_y = end_y - (len * math.sin(angle))
 
-    # print(start_x, start_y, end_x, end_y)
-    # print(parent_canvas.coords(line))
+#     print(start_x, start_y, end_x, end_y)
+#     print(parent_canvas.coords(line))
 
-    # parent_canvas.coords(line, start_x, start_y, end_x, end_y)
-# class RotatableLine:
+#     parent_canvas.coords(line, start_x, start_y, end_x, end_y)
+class RotatableLine:
+    # parent canvas, mid points of circle, radius of circle, length from circumfrence to center, angle in degs
+    def __init__(self, parent, mid_pt_x, mid_pt_y, radius, len, angle):
+        self.parent = parent
+        self.mid_pt_x = mid_pt_x
+        self.mid_pt_y = mid_pt_y
+        self.radius = radius
+        self.len = len
+        self.angle = -math.radians(angle)
 
-#     def __init__(self, parent, mid_pt_x, mid_pt_y, radius, len, angle):
-#         self.parent = parent
-#         self.mid_pt_x = mid_pt_x
-#         self.mid_pt_y = mid_pt_y
-#         self.radius = radius
-#         self.len = len
-#         self.angle = -math.radians(angle)
+        self.calculate_line()
 
-#     def calculate_line(self):
-#         self.end_x = self.mid_pt_x + (self.radius * math.cos(self.angle))
-#         self.end_y = self.mid_pt_y + (self.radius * math.sin(self.angle))
-#         self.start_x = self.end_x - (self.len * math.cos(self.angle))
-#         self.start_y = self.end_y - (self.len * math.sin(self.angle))
+    def calculate_line(self):
+        self.end_x = self.mid_pt_x + (self.radius * math.cos(self.angle))
+        self.end_y = self.mid_pt_y + (self.radius * math.sin(self.angle))
+        self.start_x = self.end_x - (self.len * math.cos(self.angle))
+        self.start_y = self.end_y - (self.len * math.sin(self.angle))
 
-#         print(self.start_x, self.start_y, self.end_x, self.end_y)
+        print(self.start_x, self.start_y, self.end_x, self.end_y)
 
-#         self.line = self.parent.create_line(self.start_x, self.start_y, self.end_x, self.end_y)
-        
-# parent canvas, mid points of circle, radius of circle, length from circumfrence to center, angle in degs
-def create_arc_seg(parent, mid_pt_x, mid_pt_y, radius, len, angle):
-    angle = -math.radians(angle)
-    end_x = mid_pt_x + (radius * math.cos(angle))
-    end_y = mid_pt_y + (radius * math.sin(angle))
-    start_x = end_x - (len * math.cos(angle))
-    start_y = end_y - (len * math.sin(angle))
+        self.line = self.parent.create_line(self.start_x, self.start_y, self.end_x, self.end_y)
+    
+    def rotate_line(self, angle):
+        self.angle = -math.radians(angle)
+        self.end_x = self.mid_pt_x + (self.radius * math.cos(self.angle))
+        self.end_y = self.mid_pt_y + (self.radius * math.sin(self.angle))
+        self.start_x = self.end_x - (self.len * math.cos(self.angle))
+        self.start_y = self.end_y - (self.len * math.sin(self.angle))
 
-    print(start_x, start_y, end_x, end_y)
+        # print(start_x, start_y, end_x, end_y)
+        # print(parent_canvas.coords(line))
 
-    return parent.create_line(start_x, start_y, end_x, end_y)
+        self.parent.coords(self.line, self.start_x, self.start_y, self.end_x, self.end_y)
+    
+# # parent canvas, mid points of circle, radius of circle, length from circumfrence to center, angle in degs
+# def create_arc_seg(parent, mid_pt_x, mid_pt_y, radius, len, angle):
+#     angle = -math.radians(angle)
+#     end_x = mid_pt_x + (radius * math.cos(angle))
+#     end_y = mid_pt_y + (radius * math.sin(angle))
+#     start_x = end_x - (len * math.cos(angle))
+#     start_y = end_y - (len * math.sin(angle))
+
+#     print(start_x, start_y, end_x, end_y)
+
+#     return parent.create_line(start_x, start_y, end_x, end_y)
 
 # create 3x3 grid
 for row in range (3):
@@ -89,7 +103,12 @@ rect_line_colour = "white"
 rect_fill_colour = "black"
 text_unit_colour = "blue"
 text_unit_font = ("Helvetica", 24)
+spdo_line_width = 5
+spdo_line_colour = "white"
+spdo_colour = "cyan"
 s.configure("MyStyle.TLabel", relief="solid", background="black", foreground='white', anchor=tk.CENTER, font=('Helvetica', 24))
+s.configure("MyStyle.TLabel", relief="solid", background="black", foreground='white', anchor=tk.CENTER, font=('Helvetica', 24))
+
 
 # N1
 frame_N1 = ttk.Frame(dashboard, style="MyStyle.TFrame")
@@ -132,9 +151,17 @@ frame_SPD.grid(column=1, row=0, sticky="nsew", rowspan=2, columnspan=2)
 canvas_SPD = tk.Canvas(frame_SPD, bg="orange", highlightthickness=0)
 canvas_SPD.pack(fill="both", expand=True)
 
-canvas_SPD.create_arc(10, 10, 520, 520, outline=arc_line_colour, width=arc_line_width, start=0, extent=180, style="arc")
-canvas_SPD.create_line(250, 260, 300, 260)
-seg_1 = create_arc_seg(canvas_SPD, 265, 265, 255, 200, 15)
+canvas_SPD.create_arc(10, 10, 520, 520, outline=spdo_colour, width=spdo_line_width, start=0, extent=180, style="arc")
+test_line = canvas_SPD.create_line(250, 260, 300, 260)
+canvas_SPD.itemconfigure(test_line, fill=spdo_colour, width=spdo_line_width)
+# seg_1 = create_arc_seg(canvas_SPD, 265, 265, 255, 200, 15)
+needle = RotatableLine(canvas_SPD, 265, 265, 255, 200, 180)
+canvas_SPD.itemconfigure(needle.line, fill=spdo_line_colour, width=spdo_line_width)
+
+for a in range(0,181,18):
+    segment = RotatableLine(canvas_SPD, 265, 265, 255, 20, a)
+    canvas_SPD.itemconfigure(segment.line, fill=spdo_colour, width=spdo_line_width)
+    
 
 # ST_FC
 frame_ST_FC = ttk.Frame(dashboard, style="MyStyle.TFrame")
@@ -160,13 +187,11 @@ def inc_pie():
             label_N1["text"] = i/10
             # print("hi")
         print("loop")
-        rotate_line (canvas_SPD, seg_1,0)
-        # for i in range(180):
-        #     canvas_SPD.itemconfigure(seg_1, extent=-i)
-        #     time.sleep(0.01)
-        #     label_N1["text"] = i/10
-        #     # print("hi")
-        # print("loop")
+        # rotate_line (canvas_SPD, seg_1,0)
+        for i in range(180,0,-1):
+            needle.rotate_line(i)
+            time.sleep(0.01)
+        print("loop1")
 
 thread1 = threading.Thread(target=inc_pie, daemon=True)
 thread1.start()
