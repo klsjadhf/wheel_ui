@@ -8,7 +8,7 @@ is_fullscreen = False
 
 root = tk.Tk()
 root.geometry("800x480")
-root.configure(bg="blue")
+root.configure(bg="black")
 
 s = ttk.Style()
 s.configure("MyStyle.TFrame", background="black", border=0, relief="flat")
@@ -107,7 +107,7 @@ spdo_line_width = 5
 spdo_line_colour = "white"
 spdo_colour = "cyan"
 s.configure("MyStyle.TLabel", relief="solid", background="black", foreground='white', anchor=tk.CENTER, font=('Helvetica', 24))
-s.configure("MyStyle.TLabel", relief="solid", background="black", foreground='white', anchor=tk.CENTER, font=('Helvetica', 24))
+s.configure("Spdo.TLabel", background="black", foreground='white', anchor=tk.CENTER, font=('Helvetica', 40))
 
 
 # N1
@@ -148,20 +148,26 @@ canvas_FF.pack(fill="both", expand=True)
 frame_SPD = ttk.Frame(dashboard, style="MyStyle.TFrame")
 frame_SPD.grid(column=1, row=0, sticky="nsew", rowspan=2, columnspan=2)
 
-canvas_SPD = tk.Canvas(frame_SPD, bg="orange", highlightthickness=0)
+canvas_SPD = tk.Canvas(frame_SPD, bg="black", highlightthickness=0)
 canvas_SPD.pack(fill="both", expand=True)
 
 canvas_SPD.create_arc(10, 10, 520, 520, outline=spdo_colour, width=spdo_line_width, start=0, extent=180, style="arc")
-test_line = canvas_SPD.create_line(250, 260, 300, 260)
-canvas_SPD.itemconfigure(test_line, fill=spdo_colour, width=spdo_line_width)
-# seg_1 = create_arc_seg(canvas_SPD, 265, 265, 255, 200, 15)
-needle = RotatableLine(canvas_SPD, 265, 265, 255, 200, 180)
-canvas_SPD.itemconfigure(needle.line, fill=spdo_line_colour, width=spdo_line_width)
+# test_line = canvas_SPD.create_line(250, 260, 300, 260)
+# canvas_SPD.itemconfigure(test_line, fill=spdo_colour, width=spdo_line_width)
 
 for a in range(0,181,18):
     segment = RotatableLine(canvas_SPD, 265, 265, 255, 20, a)
     canvas_SPD.itemconfigure(segment.line, fill=spdo_colour, width=spdo_line_width)
-    
+
+# seg_1 = create_arc_seg(canvas_SPD, 265, 265, 255, 200, 15)
+needle = RotatableLine(canvas_SPD, 265, 265, 255, 50, 180)
+canvas_SPD.itemconfigure(needle.line, fill=spdo_line_colour, width=spdo_line_width)
+
+speed_reading = ttk.Label(canvas_SPD, style="Spdo.TLabel", text="error")
+canvas_SPD.create_window(160, 120, width=200, height=80, anchor='nw', window=speed_reading)
+canvas_SPD.create_text(160, 200, text='SPD X KM/H', anchor='nw', font=text_unit_font, fill=text_unit_colour)
+
+
 
 # ST_FC
 frame_ST_FC = ttk.Frame(dashboard, style="MyStyle.TFrame")
@@ -190,6 +196,7 @@ def inc_pie():
         # rotate_line (canvas_SPD, seg_1,0)
         for i in range(180,0,-1):
             needle.rotate_line(i)
+            speed_reading["text"] = i/10
             time.sleep(0.01)
         print("loop1")
 
