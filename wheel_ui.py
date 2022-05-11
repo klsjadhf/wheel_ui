@@ -108,6 +108,8 @@ spdo_line_colour = "white"
 spdo_colour = "cyan"
 s.configure("MyStyle.TLabel", relief="solid", background="black", foreground='white', anchor=tk.CENTER, font=('Helvetica', 24))
 s.configure("Spdo.TLabel", background="black", foreground='white', anchor=tk.CENTER, font=('Helvetica', 40))
+s.configure("MyStyle1.TLabel", relief="solid", background="black", foreground='white', anchor=tk.CENTER, font=('Helvetica', 20))
+s.configure("Units.TLabel", background="black", foreground='blue', anchor=tk.CENTER, font=('Helvetica', 20))
 
 
 # N1
@@ -132,7 +134,7 @@ canvas_N1.create_text(180, 100, text='N1 %', anchor='nw', font=text_unit_font, f
 frame_FCT = ttk.Frame(dashboard, style="MyStyle.TFrame")
 frame_FCT.grid(column=0, row=1, sticky="nsew")
 
-canvas_FCT = tk.Canvas(frame_FCT, bg="yellow", highlightthickness=0)
+canvas_FCT = tk.Canvas(frame_FCT, bg="black", highlightthickness=0)
 canvas_FCT.pack(fill="both", expand=True)
 
 arc_FCT = canvas_FCT.create_arc(10, 0, 150, 140, outline=arc_fill_colour, fill=arc_fill_colour, width=arc_line_width, start=0, extent=-0)
@@ -149,8 +151,24 @@ canvas_FCT.create_text(150, 100, text='FCT \N{DEGREE SIGN}C', anchor='nw', font=
 frame_PWR_FF = ttk.Frame(dashboard, style="MyStyle.TFrame")
 frame_PWR_FF.grid(column=0, row=2, sticky="nsew")
 
-canvas_FF = tk.Canvas(frame_PWR_FF, bg="red", highlightthickness=0)
-canvas_FF.pack(fill="both", expand=True)
+# create 2x2 grid
+for row in range (2):
+    frame_PWR_FF.rowconfigure(row, weight=1)
+for col in range(2):
+    frame_PWR_FF.columnconfigure(col, weight=1, minsize=130)
+
+label_PWR = ttk.Label(frame_PWR_FF, style="MyStyle1.TLabel", text="error")
+label_PWR.grid(column=0, row=0, padx=10, pady=10, sticky="nsew")
+
+label_FF = ttk.Label(frame_PWR_FF, style="MyStyle1.TLabel", text="error")
+label_FF.grid(column=0, row=1, padx=10, pady=10, sticky="nsew")
+
+label_PWR_unit = ttk.Label(frame_PWR_FF, style="Units.TLabel", text="PWR X W")
+label_PWR_unit.grid(column=1, row=0, sticky="nsew")
+
+label_FF_unit = ttk.Label(frame_PWR_FF, style="Units.TLabel", text="FF/MIN")
+label_FF_unit.grid(column=1, row=1, sticky="nsew")
+
 
 
 # SPD
@@ -208,12 +226,16 @@ def inc_pie():
             label_FCT["text"] = i/10
             # print("hi")
         print("loop1")
-        # rotate_line (canvas_SPD, seg_1,0)
         for i in range(180,0,-1):
             needle.rotate_line(i)
             speed_reading["text"] = i/10
             time.sleep(0.01)
         print("loop2")
+        for i in range(0,1500,10):
+            label_PWR.config(text=i)
+            label_FF.config(text=i/100)
+            time.sleep(0.01)
+        print("loop3")
 
 thread1 = threading.Thread(target=inc_pie, daemon=True)
 thread1.start()
