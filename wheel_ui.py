@@ -135,6 +135,15 @@ frame_FCT.grid(column=0, row=1, sticky="nsew")
 canvas_FCT = tk.Canvas(frame_FCT, bg="yellow", highlightthickness=0)
 canvas_FCT.pack(fill="both", expand=True)
 
+arc_FCT = canvas_FCT.create_arc(10, 0, 150, 140, outline=arc_fill_colour, fill=arc_fill_colour, width=arc_line_width, start=0, extent=-0)
+canvas_FCT.create_arc(10, 0, 150, 140, outline=arc_line_colour, width=arc_line_width, start=0, extent=-190, style="arc")
+
+label_FCT = ttk.Label(canvas_FCT, style="MyStyle.TLabel", text="error")
+canvas_FCT.create_window(100, 10, width=156, height=58, anchor='nw', window=label_FCT)
+
+canvas_FCT.create_text(150, 100, text='FCT \N{DEGREE SIGN}C', anchor='nw', font=text_unit_font, fill=text_unit_colour)
+
+
 
 # PWR_FF
 frame_PWR_FF = ttk.Frame(dashboard, style="MyStyle.TFrame")
@@ -193,12 +202,18 @@ def inc_pie():
             label_N1["text"] = i/10
             # print("hi")
         print("loop")
+        for i in range(190):
+            canvas_FCT.itemconfigure(arc_FCT, extent=-i)
+            time.sleep(0.01)
+            label_FCT["text"] = i/10
+            # print("hi")
+        print("loop1")
         # rotate_line (canvas_SPD, seg_1,0)
         for i in range(180,0,-1):
             needle.rotate_line(i)
             speed_reading["text"] = i/10
             time.sleep(0.01)
-        print("loop1")
+        print("loop2")
 
 thread1 = threading.Thread(target=inc_pie, daemon=True)
 thread1.start()
