@@ -3,6 +3,7 @@ from tkinter import ttk
 import time
 import threading
 import math
+import fuel_cell_comm as fcc
 
 is_fullscreen = False
 
@@ -27,7 +28,7 @@ def toggleFullscreen():
 		root.attributes('-fullscreen', True)
 		is_fullscreen = True
 
-startBtn = ttk.Button(root, text="toggle", command=toggleFullscreen)
+startBtn = ttk.Button(root, text="FS", command=toggleFullscreen)
 startBtn.grid(column=0, row=0, sticky="ne")
 
 dashboard = ttk.Frame(root, style="MyStyle.TFrame")
@@ -106,10 +107,13 @@ text_unit_font = ("Helvetica", 24)
 spdo_line_width = 5
 spdo_line_colour = "white"
 spdo_colour = "cyan"
+circle_colour = "blue"
+circle_line_width = 3
 s.configure("MyStyle.TLabel", relief="solid", background="black", foreground='white', anchor=tk.CENTER, font=('Helvetica', 24))
 s.configure("Spdo.TLabel", background="black", foreground='white', anchor=tk.CENTER, font=('Helvetica', 40))
 s.configure("MyStyle1.TLabel", relief="solid", background="black", foreground='white', anchor=tk.CENTER, font=('Helvetica', 20))
 s.configure("Units.TLabel", background="black", foreground='blue', anchor=tk.CENTER, font=('Helvetica', 20))
+# s.configure("MyStyle.TButton", background="black", foreground='blue', anchor=tk.CENTER, font=('Helvetica', 20))
 
 
 # N1
@@ -196,12 +200,31 @@ canvas_SPD.create_text(160, 200, text='SPD X KM/H', anchor='nw', font=text_unit_
 
 
 
+def start_FC():
+    print("start fuel cell")
+
 # ST_FC
 frame_ST_FC = ttk.Frame(dashboard, style="MyStyle.TFrame")
 frame_ST_FC.grid(column=1, row=2, sticky="nsew")
 
 canvas_ST_FC = tk.Canvas(frame_ST_FC, bg="lime", highlightthickness=0)
 canvas_ST_FC.pack(fill="both", expand=True)
+
+# FC_button = ttk.Button(canvas_ST_FC, style="MyStyle.TButton", text="Start\nFC", command=start_FC)
+frame_ST_FC.update()
+ST_FC_width = frame_ST_FC.winfo_width()/ 1.483
+ST_FC_height = frame_ST_FC.winfo_height() 
+
+circle_y1 = 5
+circle_rad = (ST_FC_height - (circle_y1*2))/2
+circle_x1 = (ST_FC_width/2) - circle_rad
+circle_y2 = circle_y1 + (2*circle_rad)
+circle_x2 = circle_x1 + (2*circle_rad)
+canvas_ST_FC.create_oval(circle_x1, circle_y1, circle_x2, circle_y2, outline=circle_colour, width=circle_line_width)
+
+print("canvas_ST_FC", ST_FC_width, ST_FC_height )
+FC_button = tk.Button(canvas_ST_FC, relief="flat", bg="orange", fg="blue", font=('Helvetica', 24), text="Start\nFC", command=start_FC)
+canvas_ST_FC.create_window(0, 0, width=ST_FC_width, height=ST_FC_height, anchor='nw', window=FC_button)
 
 
 # FUEL
@@ -210,6 +233,21 @@ frame_FUEL.grid(column=2, row=2, sticky="nsew")
 
 canvas_FUEL = tk.Canvas(frame_FUEL, bg="purple", highlightthickness=0)
 canvas_FUEL.pack(fill="both", expand=True)
+
+canvas_FUEL.update()
+FUEL_width = canvas_FUEL.winfo_width()
+FUEL_height = canvas_FUEL.winfo_height() 
+
+fuel_arc_x1 = 10
+fuel_arc_y1 = fuel_arc_x1
+fuel_arc_x2 = FUEL_width - fuel_arc_x1
+fuel_arc_y2 = (1.5*FUEL_height) - fuel_arc_y1
+canvas_FUEL.create_arc(fuel_arc_x1, fuel_arc_y1, fuel_arc_x2, fuel_arc_y2, outline=spdo_colour, width=spdo_line_width, start=0, extent=180, style="arc")
+
+for a in range(0,181,16):
+    segment1 = RotatableLine(canvas_FUEL, 265, 265, 255, 20, a)
+    canvas_FUEL.itemconfigure(segment1.line, fill=spdo_colour, width=spdo_line_width)
+
 
 
 def inc_pie():
@@ -232,13 +270,16 @@ def inc_pie():
             time.sleep(0.01)
         print("loop2")
         for i in range(0,1500,10):
-            label_PWR.config(text=i)
+            label_PWR.config(text=int(fcc.recv_fuel_cell()/150))
             label_FF.config(text=i/100)
             time.sleep(0.01)
         print("loop3")
 
 thread1 = threading.Thread(target=inc_pie, daemon=True)
 thread1.start()
+
+# thread2 = threading.Thread(target=fcc.recv_fuel_cell, daemon=True)
+# thread2.start()
 
 # keep the window displaying
 root.mainloop()
