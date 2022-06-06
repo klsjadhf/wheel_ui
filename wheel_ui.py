@@ -12,7 +12,7 @@ root.geometry("800x480")
 root.configure(bg="black")
 
 s = ttk.Style()
-s.configure("MyStyle.TFrame", background="black", border=0, relief="flat")
+s.configure("MyStyle.TFrame", background="black", border=0)
 s.configure("MyHilight.TFrame", background="red")
 s.configure("MyHilight.TLabel", background="red")
 
@@ -99,7 +99,7 @@ for col in range(3):
 
 
 text_label_font = ("Futura", 48)
-text_status_font = ("Futura", 36)
+text_status_font = ("Futura", 32)
 text_label_color = "white"
 arc_line_width = 3
 arc_line_colour = "white"
@@ -107,11 +107,11 @@ arc_fill_colour = "grey"
 rect_line_colour = "white"
 rect_fill_colour = "black"
 text_unit_colour = "blue"
-text_unit_font = ("Helvetica", 24)
+text_unit_font = ("Helvetica", 22)
 spdo_line_width = 5
 spdo_line_colour = "white"
 spdo_colour = "cyan"
-circle_colour = "blue"
+circle_colour = "cyan"
 circle_line_width = 3
 s.configure("MyStyle.TLabel", relief="solid", background='black', foreground='white', anchor=tk.CENTER, font=('Helvetica', 24))
 s.configure("Spdo.TLabel", background='black', foreground='white', anchor=tk.CENTER, font=('Helvetica', 40))
@@ -205,11 +205,14 @@ status_message = canvas_SPD.create_text(260, 220, width=400, text="STATUS", anch
 def start_FC():
     fcc.start_fuel_cell()
 
+def stop_FC():
+    fcc.stop_fuel_cell()
+
 ######## Buttons ######## 
 frame_ST_FC = ttk.Frame(dashboard, style="MyStyle.TFrame")
 frame_ST_FC.grid(column=1, row=2, sticky="nsew")
 
-canvas_ST_FC = tk.Canvas(frame_ST_FC, bg="lime", highlightthickness=0)
+canvas_ST_FC = tk.Canvas(frame_ST_FC, bg="black", highlightthickness=0)
 canvas_ST_FC.pack(fill="both", expand=True)
 
 # FC_button = ttk.Button(canvas_ST_FC, style="MyStyle.TButton", text="Start\nFC", command=start_FC)
@@ -217,53 +220,56 @@ frame_ST_FC.update()
 ST_FC_width = frame_ST_FC.winfo_width()/ 1.483
 ST_FC_height = frame_ST_FC.winfo_height() 
 
-circle_y1 = 5
-circle_rad = (ST_FC_height - (circle_y1*2))/2
-circle_x1 = (ST_FC_width/2) - circle_rad
-circle_y2 = circle_y1 + (2*circle_rad)
-circle_x2 = circle_x1 + (2*circle_rad)
-canvas_ST_FC.create_oval(circle_x1, circle_y1, circle_x2, circle_y2, outline=circle_colour, width=circle_line_width)
+#circle_y1 = 5
+#circle_rad = (ST_FC_height - (circle_y1*2))/2
+#circle_x1 = (ST_FC_width/2) - circle_rad
+#circle_y2 = circle_y1 + (2*circle_rad)
+#circle_x2 = circle_x1 + (2*circle_rad)
+#canvas_ST_FC.create_oval(circle_x1, circle_y1, circle_x2, circle_y2, outline=circle_colour, width=circle_line_width)
 
-#print("canvas_ST_FC", ST_FC_width, ST_FC_height )
-FC_button = tk.Button(canvas_ST_FC, relief="flat", bg="orange", fg="blue", font=('Helvetica', 24), text="Start\nFC", command=start_FC)
-canvas_ST_FC.create_window(0, 0, width=ST_FC_width, height=ST_FC_height, anchor='nw', window=FC_button)
+FC_Start_button = tk.Button(canvas_ST_FC, border=0, bg="black", fg="blue", font=('Futura', 24), text="START", command=start_FC)
+FC_Stop_button = tk.Button(canvas_ST_FC, border=0, bg="black", fg="blue", font=('Futura', 24), text="STOP", command=stop_FC)
+FC_Start_button.place(bordermode='inside', anchor='center', relx=0.45, rely=0.2, width=150, height=60)
+FC_Stop_button.place(bordermode='inside', anchor='center', relx=0.45, rely=0.7, width=150, height=60)
 
+#canvas_ST_FC.create_window(0, 0, width=ST_FC_width, height=ST_FC_height, anchor='nw', window=FC_button) 
 
 # FUEL
 frame_FUEL = ttk.Frame(dashboard, style="MyHilight.TFrame")
 frame_FUEL.grid(column=2, row=2, sticky="nsew")
-
-canvas_FUEL = tk.Canvas(frame_FUEL, bg="purple", highlightthickness=0)
+canvas_FUEL = tk.Canvas(frame_FUEL, bg="black", highlightthickness=0)
 canvas_FUEL.pack(fill="both", expand=True)
 
-canvas_FUEL.update()
-FUEL_width = canvas_FUEL.winfo_width()
-FUEL_height = canvas_FUEL.winfo_height() 
-
-fuel_arc_x1 = 10
-fuel_arc_y1 = fuel_arc_x1
-fuel_arc_x2 = FUEL_width - fuel_arc_x1
-fuel_arc_y2 = (1.5*FUEL_height) - fuel_arc_y1
-canvas_FUEL.create_arc(fuel_arc_x1, fuel_arc_y1, fuel_arc_x2, fuel_arc_y2, outline=spdo_colour, width=spdo_line_width, start=0, extent=180, style="arc")
-
-for a in range(0,181,16):
-    segment1 = RotatableLine(canvas_FUEL, 265, 265, 255, 20, a)
-    canvas_FUEL.itemconfigure(segment1.line, fill=spdo_colour, width=spdo_line_width)
+canvas_FUEL.create_polygon(160, 45,  40, 45,  40, 110,  160, 110,  outline='blue', width='3')
+label_FUEL = canvas_FUEL.create_text(102, 77, width=200, text="N/A", anchor='center', font=text_status_font, fill=text_label_color)
+canvas_FUEL.create_text(110, 10, text='FUEL QTY x BAR', anchor='n', font=text_unit_font, fill=text_unit_colour)
 
 
-def update_status(string):
-    pass
+
+def update_status(statusstring):
+    canvas_SPD.itemconfigure(status_message, text=statusstring)
+
+def update_FCT(value):
+    canvas_FCT.itemconfigure(label_FCT, text = value)
+    value_fraction = clamp(((value - 10) / 60.0), 0, 180)
+    circle_progress = -value_fraction * 180
+    canvas_FCT.itemconfigure(arc_FCT, extent=circle_progress)
+
+def update_PWR(value):
+    canvas_PWR_FF.itemconfigure(label_PWR, text = value)
+
+def update_FF(value):
+    canvas_PWR_FF.itemconfigure(label_FF, text = value)
+
+def update_fuel(value):
+    canvas_FUEL.itemconfigure(label_FUEL, text = value)
 
 
 def main_ui_loop():
-    while (True):
-        #pass
-        # code here
-        ui_cycle_test()
+    pass
 
-
-        #interpret data
-
+def clamp(n, smallest, largest):
+    return max(smallest, min(n, largest))
 
 def ui_cycle_test():
     for i in range(101):
@@ -274,25 +280,95 @@ def ui_cycle_test():
         canvas_N1.itemconfigure(label_N1, text=i)
         
         canvas_FCT.itemconfigure(arc_FCT, extent=-halfcircle_progress) # extent is angle in degrees
-        
         canvas_FCT.itemconfigure(label_FCT, text = i)
 
         needle.rotate_line(180-halfcircle_progress)
         canvas_SPD.itemconfigure(speed_reading, text=i)
-        
 
         canvas_PWR_FF.itemconfigure(label_FF, text = i)
         canvas_PWR_FF.itemconfigure(label_PWR, text = i)
 
+        canvas_FUEL.itemconfigure(label_FUEL, text = i)
+
         time.sleep(0.01)
+
+
+def process_received_data(data):
+
+    if ('FCT' in data):
+        fct1 = fcc.extract_val("FCT1", data)
+        fct2 = fcc.extract_val("FCT2", data)
+        fcw = fcc.extract_val("FC_W", data)
+        tank_p = fcc.extract_val("Tank-P", data)
+
+        update_FCT(round((fct1 + fct2)/2,1))
+        update_PWR(round(fcw,1))
+        update_fuel(round(tank_p,1))
+
+    elif ('ntu fc car' in data.lower()):
+        update_status('CONNECTED')
+        # Initial connection established
+
+    elif ('of cells' in data.lower()):
+        update_status('READY TO START')
+        # Fuel cell ready with watchdog
+
+    elif ('system off' in data.lower() or 'ready to start' in data.lower()):
+        update_status('READY TO START')
         
+        update_FCT(0)
+        update_PWR(0)
+        update_fuel(0)
+        update_FF(0)
+        # Fuel cell ready
+
+    elif ('initiating' in data.lower()):
+        update_status('STARTING FUEL CELL')
+        update_FCT(0)
+        update_PWR(0)
+        update_fuel(0)
+        update_FF(0)
+        # Startup phase
+
+    elif ('low h2 supply' in data.lower()):
+        update_status('LOW H2 PRESSURE')
+        # Awaiting H2
+
+    elif ('over pressure' in data.lower()):
+        update_status(data.upper())
+        # over pressure
+
+    elif ('shutdown initiated' in data.lower()):
+        update_status('FUEL CELL SHUTDOWN')
+        # fc shutting down
+
+    elif ('OK' in data):
+        update_status(data.upper())
+        # miscellaneous status message (notify)
+
+    elif ('entering to running' in data.lower()):
+        update_status(' ')
+        # clear status box here
+
+    elif ('error' in data.lower() or 'compromised' in data.lower()):
+        update_status(data.upper())
+        # send warning message here
+
+def fuel_cell_data_loop():
+    while(True):
+        time.sleep(0.5)
+
+        fc_data = fcc.recv_fuel_cell()
+        if len(fc_data) > 0:
+            print(fc_data)
+            process_received_data(fc_data.strip())
 
 
 
 thread1 = threading.Thread(target=main_ui_loop, daemon=True)
 thread1.start()
 
-thread2 = threading.Thread(target=fcc.recv_fuel_cell, daemon=True)
+thread2 = threading.Thread(target=fuel_cell_data_loop, daemon=True)
 thread2.start()
 
 # keep the window displaying
