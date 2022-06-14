@@ -107,7 +107,7 @@ arc_fill_colour = "grey"
 rect_line_colour = "white"
 rect_fill_colour = "black"
 text_unit_colour = "blue"
-text_unit_font = ("Helvetica", 22)
+text_unit_font = ("Futura", 20)
 spdo_line_width = 5
 spdo_line_colour = "white"
 spdo_colour = "cyan"
@@ -198,9 +198,9 @@ for a in range(0,181,18):
 needle = RotatableLine(canvas_SPD, 265, 265, 255, 50, 180)
 canvas_SPD.itemconfigure(needle.line, fill=spdo_line_colour, width=spdo_line_width)
 
-speed_reading = canvas_SPD.create_text(260, 100, width=400, text="NO DATA", anchor='n', font=text_label_font, fill=text_label_color)
-canvas_SPD.create_text(200, 180, text='SPD X KM/H', anchor='nw', font=text_unit_font, fill=text_unit_colour)
-status_message = canvas_SPD.create_text(260, 220, width=400, text="STATUS", anchor='n', font=text_status_font, fill=text_label_color)
+speed_reading = canvas_SPD.create_text(270, 100, width=400, text="NO DATA", anchor='n', font=text_label_font, fill=text_label_color)
+canvas_SPD.create_text(190, 180, text='SPD X KM/H', anchor='nw', font=text_unit_font, fill=text_unit_colour)
+status_message = canvas_SPD.create_text(270, 220, width=400, text="STATUS", anchor='n', font=text_status_font, fill=text_label_color)
 
 def start_FC():
     fcc.start_fuel_cell()
@@ -240,8 +240,8 @@ frame_FUEL.grid(column=2, row=2, sticky="nsew")
 canvas_FUEL = tk.Canvas(frame_FUEL, bg="black", highlightthickness=0)
 canvas_FUEL.pack(fill="both", expand=True)
 
-canvas_FUEL.create_polygon(160, 45,  40, 45,  40, 110,  160, 110,  outline='blue', width='3')
-label_FUEL = canvas_FUEL.create_text(102, 77, width=200, text="N/A", anchor='center', font=text_status_font, fill=text_label_color)
+canvas_FUEL.create_polygon(160, 55,  40, 55,  40, 120,  160, 120,  outline='blue', width='3')
+label_FUEL = canvas_FUEL.create_text(102, 87, width=200, text="N/A", anchor='center', font=text_status_font, fill=text_label_color)
 canvas_FUEL.create_text(110, 10, text='FUEL QTY x BAR', anchor='n', font=text_unit_font, fill=text_unit_colour)
 
 
